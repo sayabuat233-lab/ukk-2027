@@ -18,7 +18,7 @@ if (isset($_POST['simpan'])) {
     header("Location: kelola_kelas.php"); exit();
 }
 
-// 2. PROSES HAPUS (BERSIHKAN RELASI FOREIGN KEY)
+// 2. PROSES HAPUS
 if (isset($_GET['hapus'])) {
     $id_kelas = $_GET['hapus'];
     mysqli_query($koneksi, "DELETE FROM t_pelanggaran_siswa WHERE kelas_id='$id_kelas'");
@@ -28,7 +28,6 @@ if (isset($_GET['hapus'])) {
     header("Location: kelola_kelas.php"); exit();
 }
 
-$aksi = $_GET['aksi'] ?? '';
 $edit_id = $_GET['edit'] ?? '';
 $edit = $edit_id ? mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM t_kelas WHERE id='$edit_id'")) : null;
 
@@ -54,6 +53,8 @@ $no = $offset + 1;
         .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 10px 20px; }
         .sidebar a:hover, .sidebar a.active { color: #fff; background: #0d6efd; }
         .main-content { margin-left: 250px; padding: 20px; }
+        .btn-dashboard { background-color: #6c757d; color: #fff; border-radius: 4px; padding: 6px 12px; font-size: 14px; text-decoration: none; display: inline-block; }
+        .btn-dashboard:hover { background-color: #5a6268; color: #fff; }
     </style>
 </head>
 <body>
@@ -68,74 +69,74 @@ $no = $offset + 1;
             <li class="nav-item mb-1"><a href="penempatan_siswa.php">Penempatan Siswa</a></li>
             <li class="nav-item mb-1"><a href="kelola_wali_kelas.php">Kelola Wali Kelas</a></li>
             <li class="nav-item mb-1"><a href="kelola_kategori_pelanggaran.php">Kelola Kategori Pelanggaran</a></li>
-            <li class="nav-item mb-1"><a href="laporan.php">laporan</a></li>
+            <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
             <li class="nav-item mb-1"><a href="kelola_jenis_pelanggaran.php">Kelola Jenis Pelanggaran</a></li>
             <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>
         </ul>
         <hr><a href="logout.php" class="text-danger">Logout</a>
     </div>
 
-    <div class="main-content">
-        <?php if ($aksi === 'tambah' || $edit): ?>
-            <!-- ================= FORM HALAMAN PENUH ================= -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2><?= $edit ? 'Edit Data Kelas' : 'Tambah Data Kelas'; ?></h2>
-                <a href="kelola_kelas.php" class="btn btn-secondary btn-sm">&larr; Kembali</a>
-            </div>
-            <hr>
+   <div class="main-content">
+        <h2>Kelola Kelas</h2>
+        <div class="mb-3">
 
-            <div class="card shadow-sm"><div class="card-body">
+         <a href="dashboard.php" class="btn btn-secondary">
+            Kembali ke Dashboard
+        </a>
+
+
+    </div>
+        <!-- FORM INPUT / EDIT (SATU HALAMAN) -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white py-2">
+                <?= $edit ? 'Edit Data Kelas' : 'Tambah Data Kelas'; ?>
+            </div>
+            <div class="card-body">
                 <form method="POST">
                     <input type="hidden" name="id" value="<?= $edit['id'] ?? ''; ?>">
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Kelas:</label>
-                        <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($edit['nama'] ?? ''); ?>" required>
+                        <label class="form-label">Nama Kelas</label>
+                        <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($edit['nama'] ?? ''); ?>" placeholder="Contoh: XII RPL 1" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Tingkat:</label>
+                        <label class="form-label">Tingkat</label>
                         <input type="text" name="tingkat" class="form-control" value="<?= htmlspecialchars($edit['tingkat'] ?? ''); ?>" placeholder="Contoh: XII">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Jurusan:</label>
+                        <label class="form-label">Jurusan</label>
                         <input type="text" name="jurusan" class="form-control" value="<?= htmlspecialchars($edit['jurusan'] ?? ''); ?>" placeholder="Contoh: RPL">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Status Aktif:</label>
+                        <label class="form-label">Status Aktif</label>
                         <select name="status_aktif" class="form-control" required>
                             <option value="Aktif" <?= (($edit['status_aktif'] ?? 1) == 1 || ($edit['status_aktif'] ?? '') == 'Aktif') ? 'selected' : ''; ?>>Aktif</option>
                             <option value="Tidak Aktif" <?= (($edit['status_aktif'] ?? 1) == 0 || ($edit['status_aktif'] ?? '') == 'Tidak Aktif') ? 'selected' : ''; ?>>Tidak Aktif</option>
                         </select>
                     </div>
 
-                    <hr>
-                    <div class="d-flex justify-content-end">
-                        <a href="kelola_kelas.php" class="btn btn-secondary me-2">Batal</a>
-                        <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
-                    </div>
+                    <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
+                    <?php if ($edit): ?>
+                        <a href="kelola_kelas.php" class="btn btn-secondary">Batal</a>
+                    <?php endif; ?>
                 </form>
-            </div></div>
-
-        <?php else: ?>
-            <!-- ================= TABEL UTAMA ================= -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h2>Kelola Kelas</h2>
-                <a href="?aksi=tambah" class="btn btn-primary btn-sm">+ Tambah</a>
             </div>
-                <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard
-        </a>
-        <hr>
+        </div>
 
-            <div class="card shadow-sm"><div class="card-body">
-                <div class="row mb-3 justify-content-between">
-                    <div class="col-auto">Tampilkan <select class="form-select form-select-sm d-inline-block w-auto"><option>10</option></select> data</div>
+        <!-- TABEL DATA KELAS -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white py-2">Data Kelas</div>
+            <div class="card-body">
+                <div class="row mb-3 justify-content-between align-items-center">
+                    <div class="col-auto">Tampilkan 
+                        <select class="form-select form-select-sm d-inline-block w-auto"><option>10</option></select> data
+                    </div>
                     <div class="col-auto">
                         <form method="GET" class="d-flex align-items-center">
-                            <label class="me-2 mb-0 fw-bold">Cari:</label>
+                            <label class="me-2 mb-0">Cari data:</label>
                             <input type="text" name="cari" class="form-control form-control-sm" value="<?= htmlspecialchars($cari); ?>">
                         </form>
                     </div>
@@ -183,8 +184,8 @@ $no = $offset + 1;
                         <li class="page-item <?= $h >= $pages ? 'disabled' : ''; ?>"><a class="page-link" href="?halaman=<?= $pages; ?>&cari=<?= $cari; ?>">Terakhir</a></li>
                     </ul>
                 </div>
-            </div></div>
-        <?php endif; ?>
+            </div>
+        </div>
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

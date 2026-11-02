@@ -142,15 +142,16 @@ if (!$data) {
 </div>
 
 <!-- KONTEN UTAMA -->
-<div class="main-content">
+  <div class="main-content">
+        <h2>Kelola Guru</h2>
+        <div class="mb-3">
 
-    <div class="mb-3">
-        <a href="dashboard.php" class="btn btn-secondary">
+         <a href="dashboard.php" class="btn btn-secondary">
             Kembali ke Dashboard
         </a>
-        <hr>
-    </div>
 
+
+    </div>
     <!-- FORM TAMBAH / EDIT DATA GURU -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">

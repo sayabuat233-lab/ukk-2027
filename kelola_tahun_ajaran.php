@@ -199,12 +199,13 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran");
     <div class="main-content">
         <h2>Kelola Tahun Ajaran</h2>
         <div class="mb-3">
-        <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard 
+
+         <a href="dashboard.php" class="btn btn-secondary">
+            Kembali ke Dashboard
         </a>
-         
+
+
     </div>
-        <hr>
 
         <!-- FORM TAMBAH / EDIT -->
         <div class="card shadow-sm mb-4">
