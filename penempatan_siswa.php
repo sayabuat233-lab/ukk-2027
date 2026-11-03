@@ -225,18 +225,16 @@ function e($value) {
         <li class="nav-item mb-1">
             <a href="kelola_kategori_pelanggaran.php">Kelola Kategori Pelanggaran</a>
         </li>
-
-        <li class="nav-item mb-1">
-            <a href="laporan.php">Laporan</a>
-        </li>
-
         <li class="nav-item mb-1">
             <a href="kelola_jenis_pelanggaran.php">Kelola Jenis Pelanggaran</a>
         </li>
-
+          <li class="nav-item mb-1">
+            <a href="laporan.php">Laporan</a>
+        </li>
         <li class="nav-item mb-1">
              <a href="about_me.php">About Me</a>
         </li>
+       
     </ul>
 
     <hr>
@@ -250,9 +248,7 @@ function e($value) {
     <h2 class="mb-3">Penempatan Siswa</h2>
 
     <div class="mb-3 no-print">
-        <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard
-        </a>
+
     </div>
 
     <!-- FILTER DAN AKSI -->

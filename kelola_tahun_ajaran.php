@@ -165,14 +165,15 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran");
                     <a href="kelola_kategori_pelanggaran.php">Kelola Kategori Pelanggaran</a>
                 </li>
                 <li class="nav-item mb-1">
-                    <a href="laporan.php">Laporan</a>
-                </li>
-                <li class="nav-item mb-1">
                     <a href="kelola_jenis_pelanggaran.php">Kelola Jenis Pelanggaran</a>
+                </li>
+                  <li class="nav-item mb-1">
+                    <a href="laporan.php">Laporan</a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="about_me.php">About Me</a>
                 </li>
+              
             <?php endif; ?>
 
             <?php if ($role === 'guru'): ?>
@@ -200,9 +201,7 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran");
         <h2>Kelola Tahun Ajaran</h2>
         <div class="mb-3">
 
-         <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard
-        </a>
+         
 
 
     </div>

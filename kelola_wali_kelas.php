@@ -153,9 +153,10 @@ body {
         <li class="nav-item mb-1"><a href="penempatan_siswa.php">Penempatan Siswa</a></li>
         <li class="nav-item mb-1"><a href="kelola_wali_kelas.php" class="active">Kelola Wali Kelas</a></li>
         <li class="nav-item mb-1"><a href="kelola_kategori_pelanggaran.php">Kelola Kategori Pelanggaran</a></li>
-        <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
         <li class="nav-item mb-1"><a href="kelola_jenis_pelanggaran.php">Kelola Jenis Pelanggaran</a></li>
-        <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>
+       
+         <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
+          <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>
     </ul>
     <hr>
     <a href="logout.php" class="text-danger">Logout</a>
@@ -167,9 +168,7 @@ body {
    <h2 class="mb-3">Kelola Wali Kelas</h2>
 
     <div class="mb-3">
-        <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard
-        </a>
+    
         
     <hr>
 

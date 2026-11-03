@@ -322,18 +322,19 @@ if (!$listTahun || !$listKelas) {
             </li>
 
             <li class="nav-item mb-1">
-                <a href="laporan.php" class="active">Laporan</a>
-            </li>
-
-            <li class="nav-item mb-1">
                 <a href="kelola_jenis_pelanggaran.php">
                     Kelola Jenis Pelanggaran
                 </a>
             </li>
-
+                     <li class="nav-item mb-1">
+                <a href="laporan.php" class="active">Laporan</a>
+            </li>
+            
             <li class="nav-item mb-1">
                <a href="about_me.php">About Me</a>
             </li>
+            
+           
 
         </ul>
 
@@ -349,9 +350,7 @@ if (!$listTahun || !$listKelas) {
         <h2>Laporan Penempatan Siswa</h2>
 
          <div class="mb-3">
-        <a href="dashboard.php" class="btn btn-secondary">
-            Kembali ke Dashboard 
-        </a>
+        
         
     </div>
         <hr>

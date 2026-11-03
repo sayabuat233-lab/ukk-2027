@@ -17,40 +17,147 @@ $nama = "Sherly Satriani";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>About Me</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body { margin: 0; background: #f8f9fa; font-family: Arial, sans-serif; }
-        .sidebar { background: #212529; min-height: 100vh; padding: 20px 15px; }
-        .sidebar a { color: white; padding: 12px; margin-bottom: 5px; border-radius: 7px; }
-        .sidebar a:hover, .sidebar a.active { background: #0d6efd; }
-        .main-content { padding: 25px; }
-        .profile-wrapper { min-height: 75vh; display: flex; justify-content: center; align-items: center; }
-        .profile-card { width: 100%; max-width: 600px; border: none; border-radius: 20px; box-shadow: 0 4px 12px #0001; }
-        .profile-photo { width: 130px; height: 130px; object-fit: cover; border-radius: 50%; border: 4px solid #e9ecef; }
-        .profile-info { text-align: left; line-height: 1.8; }
-        @media (max-width: 767px) {
-            .sidebar { min-height: auto; }
-            .main-content { padding: 15px; }
+        body {
+            background: #f8f9fa;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: #212529;
+            color: white;
+            position: fixed;
+            width: 250px;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: white;
+            background: #0d6efd;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .profile-card {
+            max-width: 800px;
+            margin: 10px 0;
+        }
+
+        @media(max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 
 <body>
-<div class="container-fluid">
-    <div class="row">
 
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 sidebar">
-            <h4 class="text-white mb-4">My Website</h4>
-            <ul class="nav flex-column">
-                <li><a href="dashboard.php" class="nav-link"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                <li><a href="about.php" class="nav-link active"><i class="bi bi-person-circle me-2"></i>About Me</a></li>
-                <hr class="text-secondary">
-                <li><a href="logout.php" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-            </ul>
-        </div>
+<!-- SIDEBAR -->
+<div class="sidebar d-flex flex-column p-3">
+    <h4 class="text-white mb-4">Pelanggaran Siswa</h4>
+
+    <ul class="nav nav-pills flex-column mb-auto">
+
+        <li class="nav-item mb-1">
+            <a href="dashboard.php">Dashboard</a>
+        </li>
+
+        <?php if ($role === 'admin'): ?>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_guru.php">Kelola Guru</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_siswa.php">Kelola Siswa</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_kelas.php">Kelola Kelas</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_tahun_ajaran.php">Kelola Tahun Ajaran</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="penempatan_siswa.php">Penempatan Siswa</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_wali_kelas.php">Kelola Wali Kelas</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_kategori_pelanggaran.php">
+                    Kelola Kategori Pelanggaran
+                </a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="kelola_jenis_pelanggaran.php">
+                    Kelola Jenis Pelanggaran
+                </a>
+            </li>
+             
+                 
+
+        <?php elseif ($role === 'guru'): ?>
+
+            <li class="nav-item mb-1">
+                <a href="catat_pelanggaran.php">Catat Pelanggaran</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="tindakan.php">Tindakan</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="riwayat.php">Riwayat</a>
+            </li>
+
+            <li class="nav-item mb-1">
+                <a href="rekap_poin.php">Rekap Poin</a>
+            </li>
+
+        <?php endif; ?>
+                 <li class="nav-item mb-1">
+                    <a href="laporan.php">Laporan</a>
+                </li>
+                
+        <li class="nav-item mb-1">
+            <a href="about_me.php" class="active">About Me</a>
+        </li>
+        
+
+    </ul>
+
+    <hr>
+    <a href="logout.php" class="text-danger">Logout</a>
+</div>
 
         <!-- Konten -->
         <div class="col-md-9 col-lg-10 main-content">
@@ -62,7 +169,7 @@ $nama = "Sherly Satriani";
                 <div class="card profile-card">
                     <div class="card-body text-center p-4">
 
-                        <img src="serli.jpeg" alt="Foto Sherly Satriani" class="profile-photo mb-3">
+                        <img src="serli.jpeg" alt="Foto Sherly Satriani" class="profile-photo mb-3" width="150" height="200">
 
                         <h3 class="fw-bold">
                             <?= htmlspecialchars($nama); ?>
