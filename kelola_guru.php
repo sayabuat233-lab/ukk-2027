@@ -39,7 +39,7 @@ if (isset($_POST['simpan'])) {
     exit();
 }
 
-// 2. PROSES HAPUS (MEMBERSIHKAN RELASI)
+// 2. PROSES HAPUS
 if (isset($_GET['hapus'])) {
     $id_guru = (int)$_GET['hapus'];
     $get_guru = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT user_id FROM t_guru WHERE id='$id_guru'"));
@@ -54,12 +54,11 @@ if (isset($_GET['hapus'])) {
     exit();
 }
 
-// AMBIL DATA UNTUK EDIT
 $edit_id = $_GET['edit'] ?? '';
 $edit = $edit_id ? mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM t_guru WHERE id='$edit_id'")) : null;
 
-// AMBIL SEMUA DATA GURU
-$data = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY nama ASC");
+// AMBIL DATA GURU (Diurutkan berdasarkan ID secara Ascending agar input terakhir ada di bawah)
+$data = mysqli_query($koneksi, "SELECT * FROM t_guru ORDER BY id ASC");
 if (!$data) {
     die("Gagal mengambil data guru: " . htmlspecialchars(mysqli_error($koneksi)));
 }
@@ -70,58 +69,22 @@ if (!$data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Guru</title>
-
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- DataTables Bootstrap 5 CSS -->
     <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .sidebar {
-            min-height: 100vh;
-            background-color: #212529;
-            color: #fff;
-            position: fixed;
-            width: 250px;
-            top: 0;
-            left: 0;
-            overflow-y: auto;
-        }
-        .sidebar a {
-            color: #adb5bd;
-            text-decoration: none;
-            display: block;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #fff;
-            background-color: #0d6efd;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            min-width: 0;
-        }
+        body { background-color: #f8f9fa; }
+        .sidebar { min-height: 100vh; background-color: #212529; color: #fff; position: fixed; width: 250px; top: 0; left: 0; overflow-y: auto; }
+        .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 10px 20px; border-radius: 5px; }
+        .sidebar a:hover, .sidebar a.active { color: #fff; background-color: #0d6efd; }
+        .main-content { margin-left: 250px; padding: 20px; min-width: 0; }
         @media (max-width: 767.98px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                min-height: auto;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+            .sidebar { position: relative; width: 100%; min-height: auto; }
+            .main-content { margin-left: 0; }
         }
     </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar d-flex flex-column p-3">
     <h4 class="text-white mb-4">Pelanggaran Siswa</h4>
     <ul class="nav nav-pills flex-column mb-auto">
@@ -134,20 +97,17 @@ if (!$data) {
         <li class="nav-item mb-1"><a href="kelola_wali_kelas.php">Kelola Wali Kelas</a></li>
         <li class="nav-item mb-1"><a href="kelola_kategori_pelanggaran.php">Kelola Kategori Pelanggaran</a></li>
         <li class="nav-item mb-1"><a href="kelola_jenis_pelanggaran.php">Kelola Jenis Pelanggaran</a></li>
-         <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
+        <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
         <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>
-        
     </ul>
     <hr>
     <a href="logout.php" class="text-danger">Logout</a>
 </div>
 
-<!-- KONTEN UTAMA -->
-  <div class="main-content">
-        <h2>Kelola Guru</h2>
-        <div class="mb-3">
-    </div>
-    <!-- FORM TAMBAH / EDIT DATA GURU -->
+<div class="main-content">
+    <h2>Kelola Guru</h2>
+    <div class="mb-3"></div>
+    
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
             <?= $edit ? 'Edit Data Guru' : 'Tambah Data Guru'; ?>
@@ -158,37 +118,27 @@ if (!$data) {
 
                 <div class="mb-3">
                     <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-control" 
-                           value="<?= htmlspecialchars($edit['nip'] ?? ''); ?>" 
-                           maxlength="18" 
-                           oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,18)" 
-                           required>
+                    <input type="text" name="nip" class="form-control" value="<?= htmlspecialchars($edit['nip'] ?? ''); ?>" maxlength="18" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,18)" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Nama</label>
-                    <input type="text" name="nama" class="form-control" 
-                           value="<?= htmlspecialchars($edit['nama'] ?? ''); ?>" 
-                           required>
+                    <input type="text" name="nama" class="form-control" value="<?= htmlspecialchars($edit['nama'] ?? ''); ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" 
-                           value="<?= htmlspecialchars($edit['email'] ?? ''); ?>" 
-                           required>
+                    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($edit['email'] ?? ''); ?>" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" 
-                           placeholder="<?= $edit ? 'Kosongkan jika tidak ingin mengubah password' : 'Masukkan password'; ?>">
+                    <input type="password" name="password" class="form-control" placeholder="<?= $edit ? 'Kosongkan jika tidak ingin mengubah password' : 'Masukkan password'; ?>">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Konfirmasi Password</label>
-                    <input type="password" name="konfirmasi_password" class="form-control" 
-                           placeholder="Ulangi password">
+                    <input type="password" name="konfirmasi_password" class="form-control" placeholder="Ulangi password">
                 </div>
 
                 <div class="mb-3">
@@ -210,11 +160,8 @@ if (!$data) {
         </div>
     </div>
 
-    <!-- TABEL DATA GURU -->
     <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-            Data Guru
-        </div>
+        <div class="card-header bg-dark text-white">Data Guru</div>
         <div class="card-body">
             <div class="table-responsive">
                 <table id="tabelGuru" class="table table-bordered table-striped table-hover align-middle w-100">
@@ -222,8 +169,9 @@ if (!$data) {
                         <tr>
                             <th>No</th>
                             <th>NIP</th>
-                            <th>Nama</th>
+                            <th>Nama Guru</th>
                             <th>Email</th>
+                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -236,14 +184,16 @@ if (!$data) {
                                 <td><?= htmlspecialchars($r['nama'] ?? ''); ?></td>
                                 <td><?= htmlspecialchars($r['email'] ?? ''); ?></td>
                                 <td>
+                                    <?php if (($r['status_aktif'] ?? 1) == 1): ?>
+                                        <span class="badge bg-success">Aktif</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Tidak Aktif</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
                                     <div class="d-flex gap-1">
-                                        <a href="kelola_guru.php?edit=<?= (int)$r['id']; ?>" class="btn btn-sm btn-warning">
-                                            Edit
-                                        </a>
-                                        <a href="kelola_guru.php?hapus=<?= (int)$r['id']; ?>" class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Yakin ingin menghapus data guru ini?')">
-                                            Hapus
-                                        </a>
+                                        <a href="kelola_guru.php?edit=<?= (int)$r['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="kelola_guru.php?hapus=<?= (int)$r['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data guru ini?')">Hapus</a>
                                     </div>
                                 </td>
                             </tr>
@@ -253,16 +203,13 @@ if (!$data) {
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- JavaScript Dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- Inisialisasi DataTables -->
 <script>
 $(document).ready(function () {
     $('#tabelGuru').DataTable({
@@ -274,22 +221,14 @@ $(document).ready(function () {
             infoFiltered: "(difilter dari _MAX_ total data)",
             zeroRecords: "Data guru tidak ditemukan",
             emptyTable: "Belum ada data guru",
-            paginate: {
-                first: "Pertama",
-                last: "Terakhir",
-                next: "Berikutnya",
-                previous: "Sebelumnya"
-            }
+            paginate: { first: "Pertama", last: "Terakhir", next: "Berikutnya", previous: "Sebelumnya" }
         },
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
-        order: [[2, 'asc']],
+        order: [[0, 'asc']],
         columnDefs: [
-            {
-                targets: 4,
-                orderable: false,
-                searchable: false
-            }
+            { targets: 0, orderable: true },
+            { targets: 5, orderable: false, searchable: false }
         ]
     });
 });
