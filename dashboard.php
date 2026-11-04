@@ -1,4 +1,3 @@
-
 <?php
 require_once 'koneksi.php';
 
@@ -11,8 +10,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$role = $_SESSION['role'];
-$nama = $_SESSION['nama_user'];
+$role = $_SESSION['role'] ?? 'user';
+
+// Memperbaiki error dengan mengecek key session nama yang mungkin digunakan (name / nama_user / nama)
+$nama = $_SESSION['name'] ?? ($_SESSION['nama_user'] ?? ($_SESSION['nama'] ?? 'Pengguna'));
 
 // Menyesuaikan koneksi dari koneksi.php
 $db = isset($conn) ? $conn : $koneksi;
@@ -144,13 +145,13 @@ $total_kelas = $query_kelas
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
-                       <li class="nav-item mb-1">
+                     <li class="nav-item mb-1">
                     <a href="laporan.php">Laporan</a>
                 </li>
                 <li class="nav-item mb-1">
                     <a href="about_me.php">About Me</a>
                 </li>
-                  
+                 
 
             <?php endif; ?>
 

@@ -144,9 +144,7 @@ $nama = "Sherly Satriani";
             </li>
 
         <?php endif; ?>
-                 <li class="nav-item mb-1">
-                    <a href="laporan.php">Laporan</a>
-                </li>
+                 
                 
         <li class="nav-item mb-1">
             <a href="about_me.php" class="active">About Me</a>

@@ -3,25 +3,25 @@ require_once 'koneksi.php';
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 if (isset($_POST['simpan'])) {
-    $s_id = (int)$_POST['siswa_id'];
-    $k_id = (int)$_POST['kelas_id'];
-    $p_id = (int)$_POST['pelanggaran_id'];
-    $tgl  = $_POST['tanggal'];
+    $s_id    = (int)$_POST['siswa_id'];
+    $k_id    = (int)$_POST['kelas_id'];
+    $p_id    = (int)$_POST['pelanggaran_id'];
+    $g_id    = (int)$_POST['guru_id'];
+    $tgl     = $_POST['tanggal'];
 
     $ta = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1"))['id'] ?? 1;
     $s  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_siswa WHERE id = $s_id"))['nama'];
     $k  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_kelas WHERE id = $k_id"))['nama'];
     $p  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama, poin, pelanggaran_kategori_id FROM t_pelanggaran WHERE id = $p_id"));
+    $g  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_guru WHERE id = $g_id"))['nama'];
 
-    // Nilai default untuk kolom yang dihilangkan
-    $guru_id    = 1;
-    $nama_guru  = '-';
+    // Nilai default untuk kolom lainnya
     $keterangan = '';
     $tindakan   = '';
     $status     = 'Pending';
 
     $stmt = mysqli_prepare($koneksi, "INSERT INTO t_pelanggaran_siswa (tahun_ajaran_id, siswa_id, nama_siswa, kelas_id, nama_kelas, pelanggaran_id, nama_pelanggaran, pelanggaran_kategori_id, guru_id, nama_guru, tanggal, keterangan, poin, tindakan, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    mysqli_stmt_bind_param($stmt, "iisisisiisssiss", $ta, $s_id, $s, $k_id, $k, $p_id, $p['nama'], $p['pelanggaran_kategori_id'], $guru_id, $nama_guru, $tgl, $keterangan, $p['poin'], $tindakan, $status);
+    mysqli_stmt_bind_param($stmt, "iisisisiisssiss", $ta, $s_id, $s, $k_id, $k, $p_id, $p['nama'], $p['pelanggaran_kategori_id'], $g_id, $g, $tgl, $keterangan, $p['poin'], $tindakan, $status);
     mysqli_stmt_execute($stmt);
     header("Location: catat_pelanggaran.php"); exit();
 }
@@ -96,6 +96,17 @@ if (isset($_GET['hapus'])) {
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
+                        <label class="form-label">Guru Pencatat</label>
+                        <select name="guru_id" class="form-select" required>
+                            <option value="">-- Pilih Guru Pencatat --</option>
+                            <?php $q = mysqli_query($koneksi, "SELECT id, nip, nama FROM t_guru ORDER BY nama ASC"); while($r = mysqli_fetch_assoc($q)): ?>
+                                <option value="<?= $r['id'] ?>"><?= $r['nama'] ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Tanggal</label>
                         <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
                     </div>
@@ -112,7 +123,16 @@ if (isset($_GET['hapus'])) {
             <div class="table-responsive">
                 <table id="tabelPelanggaran" class="table table-bordered table-striped align-middle w-100">
                     <thead class="table-dark">
-                        <tr><th>No</th><th>Tanggal</th><th>Siswa</th><th>Kelas</th><th>Pelanggaran</th><th>Poin</th><th>Aksi</th></tr>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Siswa</th>
+                            <th>Kelas</th>
+                            <th>Pelanggaran</th>
+                            <th>Poin</th>
+                            <th>Guru Pencatat</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <?php $no=1; $data = mysqli_query($koneksi, "SELECT ps.*, s.nama AS s_nama, k.nama AS k_nama, p.nama AS p_nama FROM t_pelanggaran_siswa ps LEFT JOIN t_siswa s ON ps.siswa_id = s.id LEFT JOIN t_kelas k ON ps.kelas_id = k.id LEFT JOIN t_pelanggaran p ON ps.pelanggaran_id = p.id ORDER BY ps.id DESC");
@@ -124,6 +144,7 @@ if (isset($_GET['hapus'])) {
                             <td><?= $row['k_nama'] ?? '-'; ?></td>
                             <td><?= $row['p_nama'] ?? '-'; ?></td>
                             <td><span class="badge bg-danger"><?= $row['poin']; ?></span></td>
+                            <td><?= $row['nama_guru'] ?? '-'; ?></td>
                             <td><a href="catat_pelanggaran.php?hapus=<?= $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data?')">Hapus</a></td>
                         </tr>
                         <?php endwhile; ?>
@@ -137,6 +158,25 @@ if (isset($_GET['hapus'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
-<script>$(document).ready(function () { $('#tabelPelanggaran').DataTable(); });</script>
+<script>
+$(document).ready(function () { 
+    $('#tabelPelanggaran').DataTable({
+        language: {
+            paginate: {
+                first: "Pertama",
+                previous: "Sebelumnya",
+                next: "Berikutnya",
+                last: "Terakhir"
+            },
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
+            infoFiltered: "(disaring dari _MAX_ total entri)",
+            lengthMenu: "Tampilkan _MENU_ entri",
+            search: "Cari:",
+            zeroRecords: "Tidak ditemukan data yang sesuai"
+        }
+    }); 
+});
+</script>
 </body>
 </html>

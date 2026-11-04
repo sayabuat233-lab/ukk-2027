@@ -1,4 +1,3 @@
-
 <?php
 require_once 'koneksi.php';
 
@@ -44,7 +43,6 @@ $sql = "
         s.nama,
         k.nama
     ORDER BY
-        total_poin DESC,
         s.nama ASC
 ";
 
@@ -64,13 +62,13 @@ if (!$result) {
 
     <title>Rekap Poin Siswa</title>
 
-    <!-- Bootstrap SAMA DENGAN RIWAYAT -->
+    <!-- Bootstrap CSS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- DataTables -->
+    <!-- DataTables CSS -->
     <link
         href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
         rel="stylesheet"
@@ -81,7 +79,6 @@ if (!$result) {
             background: #f8f9fa;
         }
 
-        /* SIDEBAR SAMA PERSIS DENGAN RIWAYAT */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -137,7 +134,7 @@ if (!$result) {
 
 <body>
 
-    <!-- SIDEBAR SAMA DENGAN RIWAYAT -->
+    <!-- SIDEBAR -->
     <div class="sidebar d-flex flex-column p-3">
 
         <h4 class="text-white mb-4">Pelanggaran Siswa</h4>
@@ -295,7 +292,8 @@ if (!$result) {
 
                 lengthMenu: [5, 10, 25, 50, 100],
 
-                order: [[5, 'desc']],
+                // Diurutkan berdasarkan kolom indeks ke-2 (Nama Siswa) dari A ke Z (asc)
+                order: [[2, 'asc']],
 
                 columnDefs: [
                     {
