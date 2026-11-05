@@ -143,6 +143,10 @@ if (!$data) {
         <li class="nav-item mb-1">
             <a href="rekap_poin.php">Rekap Poin</a>
         </li>
+        </li>
+                     <li class="nav-item mb-1">
+                    <a href="laporan.php">Laporan</a>
+                </li>
 
         <li class="nav-item mb-1">
             <a href="about_me.php">About Me</a>

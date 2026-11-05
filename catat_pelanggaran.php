@@ -3,25 +3,62 @@ require_once 'koneksi.php';
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 if (isset($_POST['simpan'])) {
-    $s_id    = (int)$_POST['siswa_id'];
-    $k_id    = (int)$_POST['kelas_id'];
-    $p_id    = (int)$_POST['pelanggaran_id'];
-    $g_id    = (int)$_POST['guru_id'];
-    $tgl     = $_POST['tanggal'];
+    $s_id = (int)$_POST['siswa_id'];
+    $p_id = (int)$_POST['pelanggaran_id'];
+    $tgl  = $_POST['tanggal'];
 
-    $ta = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1"))['id'] ?? 1;
-    $s  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_siswa WHERE id = $s_id"))['nama'];
-    $k  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_kelas WHERE id = $k_id"))['nama'];
-    $p  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama, poin, pelanggaran_kategori_id FROM t_pelanggaran WHERE id = $p_id"));
-    $g  = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_guru WHERE id = $g_id"))['nama'];
+    // Ambil tahun ajaran aktif dari tabel t_tahun_ajaran
+    $ta_query = mysqli_query($koneksi, "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+    $ta = ($ta_row = mysqli_fetch_assoc($ta_query)) ? $ta_row['id'] : 1;
 
-    // Nilai default untuk kolom lainnya
-    $keterangan = '';
-    $tindakan   = '';
+    // Ambil kelas siswa dari tabel t_kelas_siswa berdasarkan siswa_id yang aktif[cite: 2]
+    $ks_query = mysqli_query($koneksi, "SELECT kelas_id FROM t_kelas_siswa WHERE siswa_id = $s_id AND status_aktif = 1 LIMIT 1");
+    $k_id = ($ks_row = mysqli_fetch_assoc($ks_query)) ? $ks_row['kelas_id'] : 1;
+
+    // Ambil data guru pencatat berdasarkan user yang sedang login[cite: 2]
+    $user_id = $_SESSION['user_id'] ?? 1;
+    $g_query = mysqli_query($koneksi, "SELECT id, nama FROM t_guru WHERE user_id = $user_id LIMIT 1");
+    if ($g_row = mysqli_fetch_assoc($g_query)) {
+        $g_id = $g_row['id'];
+        $g_nama = $g_row['nama'];
+    } else {
+        $fallback_guru = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT id, nama FROM t_guru LIMIT 1"));
+        $g_id = $fallback_guru['id'] ?? 1;
+        $g_nama = $fallback_guru['nama'] ?? 'Administrator';
+    }
+
+    // Ambil nama siswa[cite: 2]
+    $s_row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_siswa WHERE id = $s_id"));
+    $s_nama = $s_row['nama'] ?? '';
+
+    // Ambil nama kelas[cite: 2]
+    $k_row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama FROM t_kelas WHERE id = $k_id"));
+    $k_nama = $k_row['nama'] ?? '';
+
+    // Ambil detail pelanggaran (nama, poin, kategori_id) dari tabel t_pelanggaran[cite: 2]
+    $p_row = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT nama, poin, pelanggaran_kategori_id FROM t_pelanggaran WHERE id = $p_id"));
+    $p_nama = $p_row['nama'] ?? '';
+    $p_poin = $p_row['poin'] ?? 0;
+    $p_kat  = $p_row['pelanggaran_kategori_id'] ?? 1;
+
+    // OTOMATISASI PENGISIAN TINDAKAN BERDASARKAN POIN
+    if ($p_poin <= 10) {
+        $tindakan = 'Peringatan Lisan';
+    } elseif ($p_poin <= 20) {
+        $tindakan = 'Panggilan Orang Tua / SP 1';
+    } elseif ($p_poin <= 50) {
+        $tindakan = 'Skorsing & Pembinaan Khusus';
+    } else {
+        $tindakan = 'Dikembalikan kepada Orang Tua';
+    }
+
+    $keterangan = 'Pencatatan pelanggaran otomatis';
     $status     = 'Pending';
 
+    // Query INSERT menyimpan data beserta tindakan otomatis ke database[cite: 2]
     $stmt = mysqli_prepare($koneksi, "INSERT INTO t_pelanggaran_siswa (tahun_ajaran_id, siswa_id, nama_siswa, kelas_id, nama_kelas, pelanggaran_id, nama_pelanggaran, pelanggaran_kategori_id, guru_id, nama_guru, tanggal, keterangan, poin, tindakan, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    mysqli_stmt_bind_param($stmt, "iisisisiisssiss", $ta, $s_id, $s, $k_id, $k, $p_id, $p['nama'], $p['pelanggaran_kategori_id'], $g_id, $g, $tgl, $keterangan, $p['poin'], $tindakan, $status);
+    
+    mysqli_stmt_bind_param($stmt, "iisisisiisssiss", $ta, $s_id, $s_nama, $k_id, $k_nama, $p_id, $p_nama, $p_kat, $g_id, $g_nama, $tgl, $keterangan, $p_poin, $tindakan, $status);
     mysqli_stmt_execute($stmt);
     header("Location: catat_pelanggaran.php"); exit();
 }
@@ -54,6 +91,7 @@ if (isset($_GET['hapus'])) {
         <li class="nav-item mb-1"><a href="tindakan.php">Tindakan</a></li>
         <li class="nav-item mb-1"><a href="riwayat.php">Riwayat</a></li>
         <li class="nav-item mb-1"><a href="rekap_poin.php">Rekap Poin</a></li>
+        <li class="nav-item mb-1"><a href="laporan.php">Laporan</a></li>
         <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>
     </ul>
     <hr><a href="logout.php" class="text-danger">Logout</a>
@@ -66,7 +104,11 @@ if (isset($_GET['hapus'])) {
         <div class="card-body">
             <form method="POST">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Tanggal</label>
+                        <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Siswa</label>
                         <select name="siswa_id" class="form-select" required>
                             <option value="">-- Pilih Siswa --</option>
@@ -75,18 +117,7 @@ if (isset($_GET['hapus'])) {
                             <?php endwhile; ?>
                         </select>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Kelas</label>
-                        <select name="kelas_id" class="form-select" required>
-                            <option value="">-- Pilih Kelas --</option>
-                            <?php $q = mysqli_query($koneksi, "SELECT id, nama FROM t_kelas ORDER BY nama ASC"); while($r = mysqli_fetch_assoc($q)): ?>
-                                <option value="<?= $r['id'] ?>"><?= $r['nama'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Pelanggaran</label>
                         <select name="pelanggaran_id" class="form-select" required>
                             <option value="">-- Pilih Pelanggaran --</option>
@@ -94,21 +125,6 @@ if (isset($_GET['hapus'])) {
                                 <option value="<?= $r['id'] ?>"><?= $r['kode'].' - '.$r['nama'].' ('.$r['poin'].' Poin)' ?></option>
                             <?php endwhile; ?>
                         </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Guru Pencatat</label>
-                        <select name="guru_id" class="form-select" required>
-                            <option value="">-- Pilih Guru Pencatat --</option>
-                            <?php $q = mysqli_query($koneksi, "SELECT id, nip, nama FROM t_guru ORDER BY nama ASC"); while($r = mysqli_fetch_assoc($q)): ?>
-                                <option value="<?= $r['id'] ?>"><?= $r['nama'] ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Tanggal</label>
-                        <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d'); ?>" required>
                     </div>
                 </div>
                 <button type="submit" name="simpan" class="btn btn-primary">Simpan</button>
@@ -139,13 +155,13 @@ if (isset($_GET['hapus'])) {
                         while($row = mysqli_fetch_assoc($data)): ?>
                         <tr>
                             <td><?= $no++; ?></td>
-                            <td><?= $row['tanggal']; ?></td>
-                            <td><?= $row['s_nama'] ?? '-'; ?></td>
-                            <td><?= $row['k_nama'] ?? '-'; ?></td>
-                            <td><?= $row['p_nama'] ?? '-'; ?></td>
-                            <td><span class="badge bg-danger"><?= $row['poin']; ?></span></td>
-                            <td><?= $row['nama_guru'] ?? '-'; ?></td>
-                            <td><a href="catat_pelanggaran.php?hapus=<?= $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data?')">Hapus</a></td>
+                            <td><?= htmlspecialchars($row['tanggal']); ?></td>
+                            <td><?= htmlspecialchars($row['s_nama'] ?? $row['nama_siswa'] ?? '-'); ?></td>
+                            <td><?= htmlspecialchars($row['k_nama'] ?? $row['nama_kelas'] ?? '-'); ?></td>
+                            <td><?= htmlspecialchars($row['p_nama'] ?? $row['nama_pelanggaran'] ?? '-'); ?></td>
+                            <td><span class="badge bg-danger"><?= (int)$row['poin']; ?></span></td>
+                            <td><?= htmlspecialchars($row['nama_guru'] ?? '-'); ?></td>
+                            <td><a href="catat_pelanggaran.php?hapus=<?= (int)$row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data?')">Hapus</a></td>
                         </tr>
                         <?php endwhile; ?>
                     </tbody>
@@ -162,12 +178,7 @@ if (isset($_GET['hapus'])) {
 $(document).ready(function () { 
     $('#tabelPelanggaran').DataTable({
         language: {
-            paginate: {
-                first: "Pertama",
-                previous: "Sebelumnya",
-                next: "Berikutnya",
-                last: "Terakhir"
-            },
+            paginate: { first: "Pertama", previous: "Sebelumnya", next: "Berikutnya", last: "Terakhir" },
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
             infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
             infoFiltered: "(disaring dari _MAX_ total entri)",

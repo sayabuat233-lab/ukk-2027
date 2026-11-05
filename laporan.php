@@ -87,9 +87,12 @@ if ($role === 'admin') {
                     <li class="nav-item mb-1"><a href="tindakan.php">Tindakan</a></li>
                     <li class="nav-item mb-1"><a href="riwayat.php">Riwayat</a></li>
                     <li class="nav-item mb-1"><a href="rekap_poin.php">Rekap Poin</a></li>
+                    </li>
+                     <li class="nav-item mb-1">
+                    <a href="laporan.php">Laporan</a>
+                </li>
                     
                     <?php if ($is_wali_kelas): ?>
-                        <li class="nav-item mb-1"><a href="laporan.php" class="active">Laporan</a></li>
                     <?php endif; ?>
                 <?php endif; ?>
 
