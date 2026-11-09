@@ -104,7 +104,7 @@ if ($role === 'admin') {
         <!-- Konten Utama Laporan -->
         <div class="col-md-9 col-lg-10 main-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Halaman Laporan Pelanggaran Siswa</h2>
+                <h2>Laporan Pelanggaran Siswa</h2>
                 <span class="badge bg-secondary">Login sebagai: <?= htmlspecialchars($nama_user); ?> (<?= ucfirst($role); ?>)</span>
             </div>
 
