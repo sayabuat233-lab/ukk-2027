@@ -51,12 +51,13 @@ function e($v) { return htmlspecialchars((string)($v ?? '-'), ENT_QUOTES, 'UTF-8
         <li class="nav-item mb-1"><a href="tindakan.php">Tindakan</a></li>
         <li class="nav-item mb-1"><a href="riwayat.php">Riwayat</a></li>
         <li class="nav-item mb-1"><a href="rekap_poin.php" class="active">Rekap Poin</a></li>
+         </li>
+                     <li class="nav-item mb-1">
+                    <a href="laporan.php">Laporan</a>
+                </li>
         
         <!-- Menu Laporan: Hanya tampil jika yang login adalah Admin atau Wali Kelas -->
         <?php if ($role === 'admin' || $is_wk === true): ?>
-            <li class="nav-item mb-1">
-                <a href="laporan.php" class="<?= basename($_SERVER['PHP_SELF']) == 'laporan.php' ? 'active' : ''; ?>">Laporan</a>
-            </li>
         <?php endif; ?>
 
         <li class="nav-item mb-1"><a href="about_me.php">About Me</a></li>

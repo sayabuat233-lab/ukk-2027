@@ -87,12 +87,9 @@ if ($role === 'admin') {
                     <li class="nav-item mb-1"><a href="tindakan.php">Tindakan</a></li>
                     <li class="nav-item mb-1"><a href="riwayat.php">Riwayat</a></li>
                     <li class="nav-item mb-1"><a href="rekap_poin.php">Rekap Poin</a></li>
-                    </li>
-                     <li class="nav-item mb-1">
-                    <a href="laporan.php">Laporan</a>
-                </li>
                     
                     <?php if ($is_wali_kelas): ?>
+                        <li class="nav-item mb-1"><a href="laporan.php" class="active">Laporan</a></li>
                     <?php endif; ?>
                 <?php endif; ?>
 
@@ -104,7 +101,7 @@ if ($role === 'admin') {
         <!-- Konten Utama Laporan -->
         <div class="col-md-9 col-lg-10 main-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Laporan Pelanggaran Siswa</h2>
+                <h2>Halaman Laporan Pelanggaran Siswa</h2>
                 <span class="badge bg-secondary">Login sebagai: <?= htmlspecialchars($nama_user); ?> (<?= ucfirst($role); ?>)</span>
             </div>
 
